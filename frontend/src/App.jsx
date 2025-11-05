@@ -9,48 +9,31 @@ import Navbar from "./components/Navbar"; // Reused for about/contact
 import DashboardNavbar from "./components/DashboardNavbar";
 import InternshipForm from "./pages/InternshipForm"
 import CardDetails from "./pages/CardDetails";
+import Error from "./pages/Error";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminRoute from "./components/AdminRoute"; 
+import AdminLayout from "./components/layouts/AdminLayout";
+import AddSubmission from "./pages/AddSubmission";
+import AdminPending from "./pages/AdminPending";
+import AdminApproved from "./pages/AdminApproved";
+import AdminUpload from "./pages/AdminUpload";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import PrivateRoute from "./components/PrivateRoute";
+import ResetPassword from "./pages/ResetPassword";
+import FullGallery from "./pages/Fullgallery";
+import AdminGallery from "./pages/AdminGallery";
 
-const filters = [
-  {
-    id: "Domain",
-    name: "Domain",
-    options: [
-      { value: "ai", label: "AI" },
-      { value: "fullstack", label: "Fullstack" },
-      { value: "cybersecurity", label: "Cybersecurity" },
-    ],
-  },
-  {
-    id: "Company",
-    name: "Company",
-    options: [
-      { value: "tata", label: "Tata" },
-      { value: "karoninfotech", label: "Karoninfotech" },
-    ],
-  },
-  {
-    id: "Year",
-    name: "Year",
-    options: [
-      { value: 2024, label: "2024" },
-      { value: 2025, label: "2025" },
-      { value: 2026, label: "2026" },
-      { value: 2027, label: "2027" },
-    ],
-  },
-  {
-    id: "Type",
-    name: "Type",
-    options: [
-      { value: "internship", label: "Internship" },
-      { value: "researchproject", label: "Researchproject" },
-    ],
-  },
-];
+
+
+
+
+
 
 function App() {
   return (
     <Router>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         {/* Home: special layout with modal, so not wrapped */}
         <Route path="/" element={<Home />} />
@@ -76,6 +59,25 @@ function App() {
             </>
           }
         />
+        <Route 
+        path="/reset-password/:token" 
+        element={
+           <>
+        <ResetPassword />
+        </>
+        } />
+
+        <Route
+          path="/gallery"
+          element={
+            <>
+              {/* <Navbar /> */}
+              <FullGallery />
+            </>
+          }
+        />
+        
+
         <Route
   path="/add-details"
   element={
@@ -85,13 +87,37 @@ function App() {
     </>
   }
 />
+
+  
+<Route
+  path="/admin"
+  element={
+    <AdminRoute>
+      <AdminLayout />
+    </AdminRoute>
+  }
+>
+  <Route path="dashboard" element={<AdminDashboard />} />
+  <Route path="view-dashboard" element={<ViewDashboard />} />
+  <Route path="add-user" element={<AddSubmission />} />
+  <Route path="pending" element={<AdminPending />} />
+  <Route path="approved" element={<AdminApproved />} />
+  <Route path="import-users" element={<AdminUpload />} />
+  <Route path="gallery" element={<AdminGallery />} />
+</Route>
+
+  
+
         {/* Dashboard - different navbar */}
         <Route
           path="/dashboard"
           element={
             <>
-              
-             <ViewDashboard filters={filters} />
+              <PrivateRoute>
+                <ViewDashboard/>
+              </PrivateRoute>
+             
+             
             </>
           }
         />
@@ -104,8 +130,9 @@ function App() {
             </>
           }
         />
-
+          <Route path="*" element={<Error/>}/>
          <Route path="/logout" element={<Logout />} />
+        
       </Routes>
     </Router>
   );

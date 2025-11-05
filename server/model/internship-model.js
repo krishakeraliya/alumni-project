@@ -4,7 +4,16 @@ const internshipSchema = new Schema({
   enrollment: { type: String, required: true },
   name: { type: String, required: true },
   mobile: { type: String, required: true },
-  type: { type: String, enum: ["Internship", "Research Project"], required: true },
+  scetEmail: {type: String, required:true},
+  personalEmail:{type:String,required:true},
+  division: {type: String},
+  type: { type: String, enum: [ 
+    "summer-internship",
+    "summer-project",
+    "sem7-project",
+    "sem8-internship",
+    "sem8-project"], 
+    required: true },
   domain: { type: String, required: true },
   company: { type: String },
   companyAddress: { type: String },
@@ -23,6 +32,12 @@ const internshipSchema = new Schema({
   noc: { type: String },
   offerLetter: { type: String },
   completionLetter: { type: String },
+
+  approved: {
+  type: Boolean,
+  default: false,
+},
+ rejected: { type: Boolean, default: false }
 });
 
 const Internship = model("Internship", internshipSchema);

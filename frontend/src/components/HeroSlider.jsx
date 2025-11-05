@@ -2,8 +2,13 @@ import { useEffect, useState } from 'react';
 import img1 from '../assets/img1.png';
 import img2 from '../assets/img2.png';
 import img3 from '../assets/img3.png';
+import img4 from '../assets/img4.jpg';
+import img5 from '../assets/img5.jpg';
+import img6 from '../assets/img6.jpg';
+import img7 from '../assets/img7.jpg';
 
-const images = [img1, img2, img3];
+
+const images = [img1, img2, img3,img4,img5,img6,img7];
 const messages = [
   "Welcome to SCET Nexus",
   "SCET Nexus — Because Connections Create Opportunities.",

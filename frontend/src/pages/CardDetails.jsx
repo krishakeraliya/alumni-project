@@ -15,7 +15,14 @@ export default function CardDetails() {
     fetchCard();
   }, [id]);
 
-  if (!card) return <div className="p-6 text-center text-gray-600">Loading...</div>;
+if (!card) {
+  return (
+    <div className="min-h-screen flex justify-center items-center text-blue-600 font-semibold text-xl">
+      Loading details...
+    </div>
+  );
+}
+
 
   return (
    <div className="min-h-screen bg-gray-100 flex justify-center px-4 py-10">
@@ -36,8 +43,9 @@ export default function CardDetails() {
     <div className="mb-6">
       <h3 className="text-lg font-semibold text-gray-700 mb-2">Student Information</h3>
       <p><strong>Enrollment:</strong> {card.enrollment}</p>
-      <p><strong>Email:</strong> {card.email}</p>
-      <p><strong>Mobile:</strong> {card.mobile}</p>
+      <p><strong>SCET Email Id:</strong> {card.scetEmail}</p>
+      {/* <p><strong>Mobile:</strong> {card.mobile}</p> */}
+      <p><strong>Personal Email Id:</strong>{card.personalEmail}</p>
       <p><strong>Type:</strong> {card.type}</p>
     </div>
 
@@ -49,7 +57,12 @@ export default function CardDetails() {
       <p><strong>Domain:</strong> {card.domain}</p>
       <p><strong>Company:</strong> {card.company}</p>
       <p><strong>Company Address:</strong> {card.companyAddress}</p>
-      <p><strong>Year:</strong> {new Date(card.startDate).getFullYear()}</p>
+      <p><strong>Year:</strong> 
+  {card.startDate && !isNaN(new Date(card.startDate).getFullYear()) 
+    ? new Date(card.startDate).getFullYear() 
+    : "NA"}
+</p>
+
       <p><strong>Start Date:</strong> {card.startDate}</p>
       <p><strong>End Date:</strong> {card.endDate}</p>
       <p><strong>Stipend Received:</strong> {card.stipendReceived}</p>
@@ -66,6 +79,126 @@ export default function CardDetails() {
       <p><strong>Mentor Email:</strong> {card.mentorEmail}</p>
       <p><strong>Mentor Mobile:</strong> {card.mentorMobile}</p>
     </div>
+
+    <hr className="my-4" />
+
+{/* Submission Components */}
+<div>
+  <h3 className="text-lg font-semibold text-gray-700 mb-2">Submission Components</h3>
+
+  <p>
+    <strong>Internship/Project Report:</strong>{" "}
+    {card.reportFile ? (
+      <a
+        href={`http://localhost:5000/${card.reportFile.replace(/\\/g, "/")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        View Report
+      </a>
+    ) : (
+      "Not Uploaded"
+    )}
+  </p>
+
+  <p>
+    <strong>Supervisor Evaluation Form:</strong>{" "}
+    {card.evaluationForm ? (
+      <a
+        href={`http://localhost:5000/${card.evaluationForm.replace(/\\/g, "/")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        View Evaluation
+      </a>
+    ) : (
+      "Not Uploaded"
+    )}
+  </p>
+
+  <p>
+    <strong>Student Feedback Form:</strong>{" "}
+    {card.feedbackForm ? (
+      <a
+        href={`http://localhost:5000/${card.feedbackForm.replace(/\\/g, "/")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        View Feedback
+      </a>
+    ) : (
+      "Not Uploaded"
+    )}
+  </p>
+
+  <p>
+    <strong>PowerPoint Presentation (PPT):</strong>{" "}
+    {card.ppt ? (
+      <a
+        href={`http://localhost:5000/${card.ppt.replace(/\\/g, "/")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        View PPT
+      </a>
+    ) : (
+      "Not Uploaded"
+    )}
+  </p>
+
+  <p>
+    <strong>No Objection Certificate (NoC):</strong>{" "}
+    {card.noc ? (
+      <a
+        href={`http://localhost:5000/${card.noc.replace(/\\/g, "/")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        View NoC
+      </a>
+    ) : (
+      "Not Uploaded"
+    )}
+  </p>
+
+  <p>
+    <strong>Offer Letter:</strong>{" "}
+    {card.offerLetter ? (
+      <a
+        href={`http://localhost:5000/${card.offerLetter.replace(/\\/g, "/")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        View Offer Letter
+      </a>
+    ) : (
+      "Not Uploaded"
+    )}
+  </p>
+
+  <p>
+    <strong>Completion Certificate:</strong>{" "}
+    {card.completionLetter ? (
+      <a
+        href={`http://localhost:5000/${card.completionLetter.replace(/\\/g, "/")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        View Completion Certificate
+      </a>
+    ) : (
+      "Not Uploaded"
+    )}
+  </p>
+</div>
+
   </div>
 </div>
 

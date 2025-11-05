@@ -2,18 +2,29 @@ import React, { useState, useEffect } from 'react';
 import DashboardNavbar from "../components/DashboardNavbar";
 
 import { useNavigate } from 'react-router-dom';
+import { useRef } from 'react';
 
 import Filter from '../components/Filter';
 import Card from '../components/Card';
+import { useAuth } from "../store/auth"; 
 
 
 export default function ViewDashboard() {
+
+  
+  const { user } = useAuth();
+  const cardCache = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [cards, setCards] = useState([]);
   const [filtercards, setfiltercards] = useState([]);
   const [filterData, setFilterData] = useState([]); // ✅ defined properly
 
   const navigate = useNavigate();
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("scet-user");
+  navigate("/");
+};
 
 
   const [activefilters, setactivefilters] = useState([
@@ -24,21 +35,26 @@ export default function ViewDashboard() {
   ]);
 
   // ✅ 1. Fetch internships data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
+ useEffect(() => {
+  const fetchData = async () => {
+    try {
+      if (!cardCache.current) {
         const res = await fetch("http://localhost:5000/api/internships");
         const data = await res.json();
-         console.log("✅ cards from API:", data, typeof data, Array.isArray(data));
-        setCards(data.data); 
-setfiltercards(data.data);
-
-      } catch (error) {
-        console.error("Error fetching internships:", error);
+        console.log("✅ cards from API:", data);
+        cardCache.current = data.data;
       }
-    };
-    fetchData();
-  }, []);
+
+      setCards(cardCache.current);
+      setfiltercards(cardCache.current);
+    } catch (error) {
+      console.error("Error fetching internships:", error);
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   // ✅ 2. Fetch filters
  useEffect(() => {
@@ -131,7 +147,14 @@ useEffect(() => {
 
   return (
     <div className='bg-gray-300 min-h-screen'>
-      <DashboardNavbar searchText={searchText} setSearchText={setSearchText} />
+      {user && (
+  <DashboardNavbar 
+    searchText={searchText} 
+    setSearchText={setSearchText}  
+    userEmail={user.email}  
+    onLogout={handleLogout} 
+  />
+)}
 
       
 

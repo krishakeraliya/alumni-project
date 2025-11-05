@@ -8,9 +8,13 @@ const validate=require("../middlewares/validates-middleware")
 const authMiddleware=require("../middlewares/auth-middleware")
 
 
+
 router.route("/").get(authcontroller.home) // ⬅️ GET /api/auth/
 router.route("/signup").post(validate(signupSchema),authcontroller.signup) // ⬅️ POST /api/auth/register
 router.route("/login").post(validate(loginSchema),authcontroller.login)
 router.route("/user").get(authMiddleware,authcontroller.user)
+router.post("/forgot-password", authcontroller.forgotPassword);
+router.post("/reset-password/:token", authcontroller.resetPassword);
+
 
 module.exports = router

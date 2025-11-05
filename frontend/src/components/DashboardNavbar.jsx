@@ -1,9 +1,20 @@
 
-import React from "react";
+import React, { useState } from "react";
+
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useNavigate } from "react-router-dom";
-const DashboardNavbar = ({ searchText, setSearchText }) => {
+
+const DashboardNavbar = ({ searchText, setSearchText,userEmail, onLogout}) => {
    const navigate = useNavigate();
+   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+const toggleMenu = () => {
+  setIsMenuOpen(!isMenuOpen);
+};
+
+   
+
+ 
   return (
     <>
        <nav className="bg-white text-blue-800 font-bold py-4 shadow-md text-xl border-b border-gray-200 px-4">
@@ -23,9 +34,30 @@ const DashboardNavbar = ({ searchText, setSearchText }) => {
           <h1 className="mx-auto text-2xl font-semibold tracking-wide text-center">
             Explore Journeys <span className="text-blue-500">| Gain Insights</span> <span className="text-blue-500">| Grow Together</span>
           </h1>
+      
+          <div className="relative inline-block text-left">
+  {/* Avatar */}
+  <div
+    className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600 text-white cursor-pointer"
+    onClick={toggleMenu}
+  >
+    {userEmail.charAt(0).toUpperCase()}
+  </div>
 
-          {/* Right: Empty placeholder for symmetry or future use */}
-          <div className="w-[120px] invisible">Placeholder</div>
+  {/* Dropdown */}
+  {isMenuOpen && (
+    <div className="absolute right-0 mt-2 w-28 bg-white rounded-md shadow-lg z-10">
+      <button
+        onClick={onLogout}
+        className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        Logout
+      </button>
+    </div>
+  )}
+</div>
+
+     
         </div>
       </nav>
 

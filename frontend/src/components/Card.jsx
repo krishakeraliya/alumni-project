@@ -13,7 +13,12 @@ export default function Card({ card }) {
         <p><span className="font-semibold">Enrollment:</span> {card.enrollment}</p>
         <p><span className="font-semibold">Domain:</span> {card.domain}</p>
         <p><span className="font-semibold">Company:</span> {card.company}</p>
-        <p><span className="font-semibold">Year:</span> {new Date(card.startDate).getFullYear()}</p>
+        <p><span className="font-semibold">Year:</span> 
+  {card.startDate && !isNaN(new Date(card.startDate).getFullYear()) 
+    ? new Date(card.startDate).getFullYear() 
+    : "NA"}
+</p>
+
         <p><span className="font-semibold">Type:</span> {card.type}</p>
       </div>
 

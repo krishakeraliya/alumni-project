@@ -3,11 +3,12 @@ const {z}=require("zod");
 const loginSchema=z.object({
     email: z
     .string({ required_error: "SCET Email is required" })
-    .trim()
-    .email()
-   .regex(/^[a-z]+\.(it|ai|co)\d{2}@scet\.ac\.in$/, {
-      message: "Email must be in the format: name.branchyear@scet.ac.in",
-    }),
+  .trim()
+  .email({ message: "Invalid email format" })
+  .regex(/^([a-z]+\.((it|co|ai)\d{2}(d\d+)?|[a-z]+))@scet\.ac\.in$/i, {
+    message:
+      "Enter a valid SCET email",
+  }),
     
      password:z
     .string({required_error:"Password is required"})
@@ -24,6 +25,8 @@ const signupSchema=loginSchema.extend({
     .trim()
     .min(3,{message:"Name must be at least 3 char"})
     .max(255,{message:"Name must not be more than 255 characters"}),
+
+  
 
    
    

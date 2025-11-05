@@ -6,11 +6,14 @@ export const AuthContext=createContext();
 
 export const AuthProvider=({children})=>{
     const [token,setToken]=useState(localStorage.getItem("scet-token"));
-    const[user,setUser]=useState("")
+    const[user,setUser]=useState(null)
+     const[isLoading,setIsLoading]=useState(true)
+    
    
     const storetokenInLs=(serverToken)=>{
         localStorage.setItem(`scet-token`,serverToken);   //localitem ma aa token save thai jai.....add mate setItem melva mate getItem aave...
          setToken(serverToken);
+     
 
     }
     let isloggedin=!!token  //token value true to true false to false
@@ -24,6 +27,7 @@ export const AuthProvider=({children})=>{
     //jwt authentication-to get currently loggedin user data
     const userAuthentication=async()=>{
         try {
+            setIsLoading(true)
             const response=await fetch("http://localhost:5000/api/auth/user",{
                 method:"GET",
                 headers:{
@@ -34,6 +38,7 @@ export const AuthProvider=({children})=>{
                 const data=await response.json()
                 console.log(`user data`,data.userdata)
                 setUser(data.userdata)
+                setIsLoading(false)
             }
 
 
@@ -44,12 +49,13 @@ export const AuthProvider=({children})=>{
 
     
     useEffect(()=>{
-       
+        if (token) {
         userAuthentication();
-    },[])
+    }
+    },[token])
 
     return(
-        <AuthContext.Provider value={{isloggedin,storetokenInLs,LogOutUser,user}}>
+        <AuthContext.Provider value={{isloggedin,storetokenInLs,LogOutUser,isLoading,user}}>
             {children}
         </AuthContext.Provider>
     )
