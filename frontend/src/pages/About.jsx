@@ -36,19 +36,24 @@ function About() {
           <h3 className="text-xl italic text-gray-600 mb-6">
             "Connecting Alumni, Students & Opportunities at SCET"
           </h3>
-          <p className="text-gray-700 leading-relaxed mb-4">
+          {/* <p className="text-gray-700 leading-relaxed mb-4">
             <strong>SCET Nexus</strong> is a dedicated digital platform designed
             for the <strong>Sarvajanik College of Engineering & Technology</strong>.
             It focuses exclusively on helping students of SCET connect with alumni
-            for <span className="text-[#10B981] font-medium">summer internships</span> 
+            for <span className="text-[#10B981] font-medium">summer internships </span> 
             and <span className="text-[#10B981] font-medium">final-year projects</span>.
+          </p> */}
+           <p className="text-gray-700 leading-relaxed mb-4">
+            <strong>SCET Nexus</strong> is a dedicated digital platform designed for the
+            <strong> Sarvajanik College of Engineering & Technology</strong>.
+           It serves as a bridge between students and alumni, where final-year students can share their internship and project experiences, and juniors can explore these to connect, learn, and grow.
           </p>
         </div>
       </section>
 
       {/* What & Why Section */}
       <section className="container mx-auto px-6 py-12 grid md:grid-cols-2 gap-10">
-        <div className="bg-white rounded-xl shadow-md p-8">
+        {/* <div className="bg-white rounded-xl shadow-md p-8">
           <h2 className="text-2xl font-semibold text-[#1E3A8A] mb-4">
             What is SCET Nexus?
           </h2>
@@ -58,8 +63,20 @@ function About() {
             It provides a structured way to find guidance, opportunities, 
             and connect with mentors for academic and professional growth.
           </p>
+        </div> */}
+        <div className="bg-white rounded-xl shadow-md p-8">
+          <h2 className="text-2xl font-semibold text-[#1E3A8A] mb-4">
+            What is SCET Nexus?
+          </h2>
+          <p className="text-gray-700 leading-relaxed">
+      SCET Nexus is not just a portal — it’s a bridge that connects
+            <strong> students</strong>  across <strong>batches and with alumni.
+</strong>. 
+           It provides a structured way for final-year students to share their experiences and for juniors to gain guidance, opportunities, and mentorship for academic and professional growth.
+          </p>
         </div>
 
+{/* 
         <div className="bg-white rounded-xl shadow-md p-8">
           <h2 className="text-2xl font-semibold text-[#1E3A8A] mb-4">
             Why SCET Nexus?
@@ -70,17 +87,39 @@ function About() {
             from trusted alumni, creating a safe, reliable, and 
             <span className="text-[#10B981] font-medium"> SCET-only ecosystem</span>.
           </p>
+        </div> */}
+         <div className="bg-white rounded-xl shadow-md p-8">
+          <h2 className="text-2xl font-semibold text-[#1E3A8A] mb-4">
+            Why SCET Nexus?
+          </h2>
+          <p className="text-gray-700 leading-relaxed">
+         Students often face challenges in finding genuine internships and reliable project guidance.
+Nexus bridges this gap by offering verified opportunities shared by final-year students and trusted alumni, creating a secure and
+            <span className="text-[#10B981] font-medium"> SCET-exclusive learning ecosystem.
+
+</span>.
+          </p>
         </div>
       </section>
 
       {/* How Section */}
       <section className="container mx-auto px-6 py-12">
-        <div className="bg-gradient-to-r from-[#1E3A8A] to-[#10B981] rounded-xl shadow-lg p-10 text-white">
+        {/* <div className="bg-gradient-to-r from-[#1E3A8A] to-[#10B981] rounded-xl shadow-lg p-10 text-white">
           <h2 className="text-3xl font-semibold mb-6">How SCET Nexus Works?</h2>
           <ol className="list-decimal ml-6 space-y-3">
             <li>Students log in securely using SCET credentials.</li>
             <li>Alumni post available internships & project opportunities.</li>
             <li>Students can apply directly through Nexus portal.</li>
+            <li>Faculty validate and monitor all activities.</li>
+            <li>Students gain real-world exposure & alumni give back to SCET.</li>
+          </ol>
+        </div> */}
+        <div className="bg-gradient-to-r from-[#1E3A8A] to-[#10B981] rounded-xl shadow-lg p-10 text-white">
+          <h2 className="text-3xl font-semibold mb-6">How SCET Nexus Works?</h2>
+          <ol className="list-decimal ml-6 space-y-3">
+            <li>Students log in securely using SCET credentials.</li>
+            <li>Alumni post available internships & project opportunities.</li>
+            <li>Final-year students share their own internship and project experiences, while juniors explore them for guidance.</li>
             <li>Faculty validate and monitor all activities.</li>
             <li>Students gain real-world exposure & alumni give back to SCET.</li>
           </ol>
@@ -116,7 +155,7 @@ function About() {
 
       {/* Vision & Mission */}
       <section className="container mx-auto px-6 py-12 text-center">
-        <h2 className="text-3xl font-semibold text-[#1E3A8A] mb-4">
+        {/* <h2 className="text-3xl font-semibold text-[#1E3A8A] mb-4">
           Vision & Mission
         </h2>
         <p className="text-gray-700 max-w-3xl mx-auto leading-relaxed">
@@ -125,6 +164,14 @@ function About() {
           to foster innovation, professional development, and career growth.  
           Our mission is to make internships and final-year projects more accessible, 
           transparent, and impactful for every SCET student.
+        </p> */}
+        <h2 className="text-3xl font-semibold text-[#1E3A8A] mb-4">
+          Vision & Mission
+        </h2>
+        <p className="text-gray-700 max-w-3xl mx-auto leading-relaxed">
+          The vision of SCET Nexus is to build a collaborative digital ecosystem
+          where <strong>alumni</strong> and <strong>students</strong> stay connected, sharing experiences that inspire innovation and growth.
+          Our mission is to make internship and project experiences — from final-year students to alumni — accessible, authentic, and valuable for every SCET learner.
         </p>
       </section>
 

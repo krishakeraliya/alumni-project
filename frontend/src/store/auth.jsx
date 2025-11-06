@@ -6,7 +6,7 @@ export const AuthContext=createContext();
 
 export const AuthProvider=({children})=>{
     const [token,setToken]=useState(localStorage.getItem("scet-token"));
-    const[user,setUser]=useState(null)
+    const[user,setUser]=useState(JSON.parse(localStorage.getItem("scet-user")) || null)
      const[isLoading,setIsLoading]=useState(true)
     
    
@@ -55,7 +55,7 @@ export const AuthProvider=({children})=>{
     },[token])
 
     return(
-        <AuthContext.Provider value={{isloggedin,storetokenInLs,LogOutUser,isLoading,user}}>
+        <AuthContext.Provider value={{isloggedin,storetokenInLs,LogOutUser,isLoading,user,token}}>
             {children}
         </AuthContext.Provider>
     )

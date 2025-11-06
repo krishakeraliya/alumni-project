@@ -1,4 +1,6 @@
-// import { Link, useLocation } from "react-router-dom";
+
+
+// import { Link, useLocation,useNavigate } from "react-router-dom";
 // import { useAuth } from "../store/auth";
 
 // function Navbar({ onLoginClick }) {
@@ -7,34 +9,40 @@
 //   const { isloggedin, LogOutUser } = useAuth();
 
 //   return (
-//     <nav className="bg-[#1e293b] px-6 py-3 shadow flex justify-between items-center">
-//       {/* Logo / Brand */}
-//       <h2 className="text-2xl font-bold text-white tracking-wide">SCET Nexus</h2>
+//     <nav className="bg-[#2D2D5F] px-6 py-3 shadow-md flex justify-between items-center font-[Montserrat]">
+//       <h2 className="text-xl font-bold text-white">SCET Nexus</h2>
 
-//       {/* Navigation Links */}
-//       <ul className="flex gap-6 text-sm font-medium items-center">
+//       <ul className="flex gap-6 text-white font-medium items-center">
 //         <li>
-//           <Link to="/" className="text-white hover:text-green-400 transition">
+//           <Link
+//             to="/"
+//             className="hover:text-green-400 transition duration-200"
+//           >
 //             Home
 //           </Link>
 //         </li>
 //         <li>
-//           <Link to="/about" className="text-white hover:text-green-400 transition">
+//           <Link
+//             to="/about"
+//             className="hover:text-green-400 transition duration-200"
+//           >
 //             About
 //           </Link>
 //         </li>
 //         <li>
-//           <Link to="/contact" className="text-white hover:text-green-400 transition">
+//           <Link
+//             to="/contact"
+//             className="hover:text-green-400 transition duration-200"
+//           >
 //             Contact
 //           </Link>
 //         </li>
 
-//         {/* Conditional Auth Buttons */}
 //         {!isloggedin && isHome && (
 //           <li>
 //             <button
 //               onClick={onLoginClick}
-//               className="bg-blue-600 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition"
+//               className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition duration-200"
 //             >
 //               Login / Signup
 //             </button>
@@ -45,7 +53,7 @@
 //           <li>
 //             <button
 //               onClick={LogOutUser}
-//               className="bg-red-500 text-white px-4 py-1.5 rounded-md hover:bg-red-600 transition"
+//               className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition duration-200"
 //             >
 //               Logout
 //             </button>
@@ -58,24 +66,27 @@
 
 // export default Navbar;
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../store/auth";
 
 function Navbar({ onLoginClick }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
-  const { isloggedin, LogOutUser } = useAuth();
+  const { isloggedin, LogOutUser, user } = useAuth();
 
   return (
     <nav className="bg-[#2D2D5F] px-6 py-3 shadow-md flex justify-between items-center font-[Montserrat]">
-      <h2 className="text-xl font-bold text-white">SCET Nexus</h2>
+      <h2
+        className="text-xl font-bold text-white cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        SCET Nexus
+      </h2>
 
       <ul className="flex gap-6 text-white font-medium items-center">
         <li>
-          <Link
-            to="/"
-            className="hover:text-green-400 transition duration-200"
-          >
+          <Link to="/" className="hover:text-green-400 transition duration-200">
             Home
           </Link>
         </li>
@@ -96,6 +107,7 @@ function Navbar({ onLoginClick }) {
           </Link>
         </li>
 
+        {/* ✅ LOGIN / SIGNUP button for guests only */}
         {!isloggedin && isHome && (
           <li>
             <button
@@ -107,15 +119,39 @@ function Navbar({ onLoginClick }) {
           </li>
         )}
 
-        {isloggedin && (
-          <li>
-            <button
-              onClick={LogOutUser}
-              className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition duration-200"
-            >
-              Logout
-            </button>
-          </li>
+        {/* ✅ SHOW DASHBOARD BUTTON IF LOGGED IN */}
+        {isloggedin && user && (
+          <>
+            <li>
+              {user.isAdmin ? (
+                <button
+                  onClick={() => navigate("/admin/dashboard")}
+                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition duration-200"
+                >
+                  Admin Panel
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 transition duration-200"
+                >
+                  My Dashboard
+                </button>
+              )}
+            </li>
+
+            <li>
+              <button
+                onClick={() => {
+                  LogOutUser();
+                  navigate("/");
+                }}
+                className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition duration-200"
+              >
+                Logout
+              </button>
+            </li>
+          </>
         )}
       </ul>
     </nav>
@@ -123,3 +159,4 @@ function Navbar({ onLoginClick }) {
 }
 
 export default Navbar;
+

@@ -6,7 +6,7 @@ const internshipSchema = new Schema({
   mobile: { type: String, required: true },
   scetEmail: {type: String, required:true},
   personalEmail:{type:String,required:true},
-  division: {type: String},
+  division: {type: String,required:true},
   type: { type: String, enum: [ 
     "summer-internship",
     "summer-project",
@@ -21,7 +21,7 @@ const internshipSchema = new Schema({
   mentorDesignation: { type: String },
   mentorMobile: { type: String },
   mentorEmail: { type: String },
-  stipendReceived: { type: String, enum: ["Yes", "No"], required: true },
+  stipendReceived: { type: String, enum: ["","Yes", "No"], required:false,default:""},
   stipendAmount: { type: String },
   startDate: { type: String },
   endDate: { type: String },

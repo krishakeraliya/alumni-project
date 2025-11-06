@@ -35,8 +35,7 @@ function Contact() {
       >
         <h1 className="text-4xl font-bold text-[#1E3A8A]">Contact Us</h1>
         <p className="text-lg text-gray-600 mt-2 max-w-2xl mx-auto">
-          We’d love to hear from you. Reach out for queries, collaborations, or
-          support.
+         We’d be glad to hear from you. Reach out for queries, collaborations, or support.
         </p>
       </motion.div>
 

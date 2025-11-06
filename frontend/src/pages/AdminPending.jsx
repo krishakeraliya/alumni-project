@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import formbg from "../assets/formbg.png";
 import { toast } from "react-toastify";
+import { useAuth } from "../store/auth";
 
 
 export default function AdminPending() {
@@ -13,21 +14,25 @@ export default function AdminPending() {
      
       const [updateData, setUpdateData] = useState(null);
       const [fileInputs, setFileInputs] = useState({});
+      const { token } = useAuth();
 
       const fetchPending = async () => {
-    const res = await axios.get("http://localhost:5000/api/pending");
+        const headers = { Authorization: `Bearer ${token}` };
+    const res = await axios.get("http://localhost:5000/api/pending",{ headers });
     setPending(res.data);
   };
 
 
        const approveHandler = async (id) => {
-    await axios.put(`http://localhost:5000/api/approve/${id}`);
+        const headers = { Authorization: `Bearer ${token}` };
+    await axios.put(`http://localhost:5000/api/approve/${id}`,{},{ headers });
     fetchPending();
   };
 
   const handleReject = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/reject/${id}`);
+       const headers = { Authorization: `Bearer ${token}` };
+      await axios.patch(`http://localhost:5000/api/reject/${id}`,{},{ headers });
       setPending((prev) => prev.filter((item) => item._id !== id));
     } catch (error) {
       console.error("Error rejecting submission:", error);
@@ -55,6 +60,10 @@ export default function AdminPending() {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      };
       const formData = new FormData();
       Object.entries(updateData).forEach(([key, value]) => {
         formData.append(key, value);
@@ -63,9 +72,7 @@ export default function AdminPending() {
         formData.append(key, file);
       });
 
-      await axios.put(`http://localhost:5000/api/update/${updateData._id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.put(`http://localhost:5000/api/update/${updateData._id}`, formData, { headers });
 
       await fetchPending();
       setShowUpdateModal(false);
@@ -78,9 +85,9 @@ export default function AdminPending() {
 
   
     useEffect(() => {
-      fetchPending();
+      if (token) fetchPending();
       
-    }, []);
+    }, [token]);
   
   return (
     <div>

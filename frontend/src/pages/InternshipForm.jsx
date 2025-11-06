@@ -44,28 +44,85 @@ export default function InternshipForm() {
   });
 };
  const isValidSCETEmail = (email) => {
-    const regex = /^([a-z]+\.((it|co|ai)\d{2}|[a-z]+))@scet\.ac\.in$/i;
-    return regex.test(email);
-  };
-   const isFinalYearStudent = (email) => {
-    const match = email.match(/^[a-z]+\.(it|co|ai)(\d{2})@scet\.ac\.in$/i);
-    if (!match) return false;
-    const admissionYear = 2000 + parseInt(match[2], 10);
-    const currentYear = new Date().getFullYear();
-    return currentYear === admissionYear + 3;
-  };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-const { scetEmail } = formdata;
-
-    if (!isValidSCETEmail(scetEmail)) {
-      toast.warn("Invalid SCET Email format.");
+   const e = email.trim();
+ 
+   // Allowed formats:
+   // 1. name.branchyy@scet.ac.in
+   // 2. name.branchyyd1@scet.ac.in
+  
+    const regex = /^[a-z]+\.(it|co|ai)\d{2}(d\d+)?@scet\.ac\.in$/; 
+ 
+   return regex.test(e);
+ };
+ 
+ //  Final Year Check
+ const isFinalYearStudent = (email) => {
+   const e = email.trim();
+ 
+   // Extract admission year only (ignore d1/d2 for year calculation)
+   const match = e.match(/^[a-z]+\.(it|co|ai)(\d{2})(d[1-9])?@scet\.ac\.in$/);
+   if (!match) return false;
+ 
+   const admissionYear = 2000 + parseInt(match[2], 10);
+   const currentYear = new Date().getFullYear();
+ 
+   // SCET: 4th year = admissionYear + 3
+   return currentYear === admissionYear + 3;
+ };
+ const isValidEnrollment = (enrollment) => {
+  const regex = /^ET\d{2}BT(it|co|ai)\d{1,3}$/i;
+  return regex.test(enrollment.trim());
+};
+ // ✅ Handle Submit
+ const handleSubmit = async (e) => {
+   e.preventDefault();
+ 
+   const email = formdata.scetEmail.trim();
+ 
+   if (!isValidSCETEmail(email)) {
+     toast.warn("Invalid SCET Email format.");
+     return;
+   }
+ 
+   if (!isFinalYearStudent(email)) {
+     toast.warn("Only Final Year (4th year) students can fill this form.");
+     return;
+   }
+   if (!isValidEnrollment(formdata.enrollment)) {
+  toast.warn("Invalid Enrollment format");
+  return;
+}
+   const internshipTypes = ["summer-internship", "sem8-internship"];
+    if (internshipTypes.includes(formdata.type)) {
+    if (!formdata.company.trim()) {
+      toast.warn("Company name is required for Internship.");
       return;
     }
-     if (!isFinalYearStudent(scetEmail)) {
-      toast.warn("Only Final Year (4th year) students can fill this form.");
+  if (!formdata.companyAddress.trim()) {
+  toast.warn("Please provide company address or mention 'Online Internship'.");
+  return;
+}
+    if (!formdata.mentorName.trim()) {
+      toast.warn("Mentor name is required for Internship.");
       return;
     }
+    if (!formdata.mentorDesignation.trim()) {
+      toast.warn("Mentor designation is required for Internship.");
+      return;
+    }
+    if (!formdata.mentorEmail.trim()) {
+      toast.warn("Mentor email is required for Internship.");
+      return;
+    }
+    if (!formdata.startDate.trim()) {
+      toast.warn("Start date is required for Internship.");
+      return;
+    }
+    if (!formdata.endDate.trim()) {
+      toast.warn("End date is required for Internship.");
+      return;
+    }
+  }
   try {
     const formDataToSend = new FormData();
     for (const key in formdata) {
@@ -111,6 +168,8 @@ const { scetEmail } = formdata;
         offerLetter: "",
         completionLetter: "",
       });
+    }else {
+      toast.error(res_data.message || "Submission failed!");
     }
   } catch (error) {
     console.error("Submit error:", error);
@@ -191,6 +250,7 @@ const { scetEmail } = formdata;
                 onChange={handleInput}
                 placeholder="Enter SCET Email ID"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                required
               />
             </div>
             <div>
@@ -218,6 +278,7 @@ const { scetEmail } = formdata;
                 onChange={handleInput}
                 placeholder="Division"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                required
               />
             </div>
           <div>
@@ -227,6 +288,7 @@ const { scetEmail } = formdata;
   value={formdata.type}
   onChange={handleInput}
   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+  required
 >
   <option value="">-- Select Type --</option>
   <option value="summer-internship">Summer Internship</option>
@@ -249,6 +311,7 @@ const { scetEmail } = formdata;
                 onChange={handleInput}
                 placeholder="Domain"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                required
               />
             </div>
 
@@ -324,7 +387,7 @@ const { scetEmail } = formdata;
                 onChange={handleInput}
                 placeholder="Contact Number"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-                required
+            
               />
             </div>
 

@@ -141,6 +141,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import api from "../api/api";
 import toast, { Toaster } from "react-hot-toast";  // <-- import toast
+import { useAuth } from "../store/auth";
 
 export default function AdminGallery() {
   const [files, setFiles] = useState([]);
@@ -148,6 +149,7 @@ export default function AdminGallery() {
   const [loading, setLoading] = useState(false);
 
   const fileInputRef = useRef(null);
+   const { token } = useAuth(); // ✅ get token
 
   useEffect(() => {
     loadImages();
@@ -183,7 +185,7 @@ export default function AdminGallery() {
     try {
       setLoading(true);
       await api.post('/gallery/upload', form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { 'Content-Type': 'multipart/form-data' , Authorization: `Bearer ${token}`, },
       });
       setFiles([]);
       loadImages();
@@ -201,7 +203,9 @@ export default function AdminGallery() {
     if (!window.confirm('Delete this image?')) return;
 
     try {
-      const res = await api.delete(`/gallery/${id}`);
+      const res = await api.delete(`/gallery/${id}`,{
+        headers: { Authorization: `Bearer ${token}` }, // ✅ send token
+      });
       if (res.status === 200) {
         loadImages();
         toast.success("Image deleted successfully");

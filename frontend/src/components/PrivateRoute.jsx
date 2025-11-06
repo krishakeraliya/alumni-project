@@ -10,7 +10,7 @@ const PrivateRoute = ({ children }) => {
   }
 
   if (isLoading) {
-    return null; // or loader/spinner
+   return <div className="text-center mt-10">Loading...</div>;
   }
 
   return children;

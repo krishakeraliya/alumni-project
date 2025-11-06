@@ -3,8 +3,10 @@ import axios from "axios";
 import formbg from "../assets/formbg.png";
 import imgform from "../assets/imgform.png"; // Side background image
 import { toast } from "react-toastify";
+import { useAuth } from "../store/auth";
 
 export default function AddSubmission() {
+  const { token } = useAuth();
   const[formdata,setformdata]=useState({
   name:"",
   enrollment: "",
@@ -78,7 +80,8 @@ const isValidSCETEmail = (email) => {
   // 1. name.branchyy@scet.ac.in
   // 2. name.branchyyd1@scet.ac.in
   // const regex = /^[a-z]+\.(it|co|ai)\d{2}(d[1-9])?@scet\.ac\.in$/;
-   const regex = /^[a-z0-9]+\.(it|co|ai)\d{2}(d\d+)?@scet\.ac\.in$/i; 
+   const regex = /^[a-z]+\.(it|co|ai)\d{2}(d\d+)?@scet\.ac\.in$/; 
+
   return regex.test(e);
 };
 
@@ -96,6 +99,10 @@ const isFinalYearStudent = (email) => {
   // SCET: 4th year = admissionYear + 3
   return currentYear === admissionYear + 3;
 };
+ const isValidEnrollment = (enrollment) => {
+  const regex = /^ET\d{2}BT(it|co|ai)\d{1,3}$/i;
+  return regex.test(enrollment.trim());
+};
 
 // ✅ Handle Submit
 const handleSubmit = async (e) => {
@@ -112,6 +119,41 @@ const handleSubmit = async (e) => {
     toast.warn("Only Final Year (4th year) students can fill this form.");
     return;
   }
+   if (!isValidEnrollment(formdata.enrollment)) {
+    toast.warn("Invalid Enrollment format");
+    return;
+  }
+   const internshipTypes = ["summer-internship", "sem8-internship"];
+      if (internshipTypes.includes(formdata.type)) {
+      if (!formdata.company.trim()) {
+        toast.warn("Company name is required for Internship.");
+        return;
+      }
+    if (!formdata.companyAddress.trim()) {
+    toast.warn("Please provide company address or mention 'Online Internship'.");
+    return;
+  }
+      if (!formdata.mentorName.trim()) {
+        toast.warn("Mentor name is required for Internship.");
+        return;
+      }
+      if (!formdata.mentorDesignation.trim()) {
+        toast.warn("Mentor designation is required for Internship.");
+        return;
+      }
+      if (!formdata.mentorEmail.trim()) {
+        toast.warn("Mentor email is required for Internship.");
+        return;
+      }
+      if (!formdata.startDate.trim()) {
+        toast.warn("Start date is required for Internship.");
+        return;
+      }
+      if (!formdata.endDate.trim()) {
+        toast.warn("End date is required for Internship.");
+        return;
+      }
+    }
 
   try {
     const formDataToSend = new FormData();
@@ -122,6 +164,7 @@ const handleSubmit = async (e) => {
  await axios.post("http://localhost:5000/api/addsubmission", formDataToSend, {
   headers: {
     "Content-Type": "multipart/form-data",
+    Authorization: `Bearer ${token}` ,
   },
 });
 
@@ -155,6 +198,7 @@ const handleSubmit = async (e) => {
         offerLetter: "",
         completionLetter: "",
       });
+      
     }
    catch (error) {
     alert("Failed to add submission");
@@ -233,6 +277,7 @@ const handleSubmit = async (e) => {
                 onChange={handleInput}
                 placeholder="Enter SCET Email ID"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                required
               />
             </div>
             <div>
@@ -260,6 +305,7 @@ const handleSubmit = async (e) => {
                 onChange={handleInput}
                 placeholder="Division"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                required
               />
             </div>
              <div>
@@ -269,6 +315,7 @@ const handleSubmit = async (e) => {
   value={formdata.type}
   onChange={handleInput}
   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+  required
 >
   <option value="">-- Select Type --</option>
   <option value="summer-internship">Summer Internship</option>
@@ -290,6 +337,7 @@ const handleSubmit = async (e) => {
                 onChange={handleInput}
                 placeholder="Domain"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                required
               />
             </div>
 
@@ -365,7 +413,7 @@ const handleSubmit = async (e) => {
                 onChange={handleInput}
                 placeholder="Contact Number"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-                required
+              
               />
             </div>
 

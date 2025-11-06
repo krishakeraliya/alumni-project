@@ -49,25 +49,66 @@ const getInternshipById = async (req, res) => {
 //     res.status(500).json({ error: "Error loading filters" });
 //   }
 // };
+// const getFilterOptions = async (req, res) => {
+//   try {
+//     // ✅ Only from approved internships
+//     const approvedInternships = await Internship.find({ approved: true });
+
+//     const domains = [...new Set(approvedInternships.map((i) => i.domain))];
+//     const companies = [...new Set(approvedInternships.map((i) => i.company))];
+
+//     const yearsRaw = approvedInternships.map((i) => i.startDate);
+//     const uniqueYears = yearsRaw
+//       .filter(Boolean)
+//       .map((dateStr) => {
+//         const [day, month, year] = dateStr.split('/');
+//         return parseInt(year);
+//       })
+//       .filter((v, i, a) => a.indexOf(v) === i && !isNaN(v));
+
+//     res.json({ domainOptions: domains, companyOptions: companies, yearOptions: uniqueYears });
+//   } catch (err) {
+//     res.status(500).json({ error: "Error loading filters" });
+//   }
+// };
 const getFilterOptions = async (req, res) => {
   try {
-    // ✅ Only from approved internships
+    // ✅ Only approved internships used for filtering
     const approvedInternships = await Internship.find({ approved: true });
 
-    const domains = [...new Set(approvedInternships.map((i) => i.domain))];
-    const companies = [...new Set(approvedInternships.map((i) => i.company))];
+    // 🧠 Collect domains & companies
+    const domains = [...new Set(approvedInternships.map(i => i.domain?.trim()).filter(Boolean))];
+    const companies = [...new Set(approvedInternships.map(i => i.company?.trim()).filter(Boolean))];
 
-    const yearsRaw = approvedInternships.map((i) => i.startDate);
-    const uniqueYears = yearsRaw
+    // 🗓️ Extract unique years from DD/MM/YY
+    const uniqueYears = approvedInternships
+      .map(i => i.startDate)
       .filter(Boolean)
-      .map((dateStr) => {
-        const [day, month, year] = dateStr.split('/');
-        return parseInt(year);
+      .map(dateStr => {
+        const parts = dateStr.split("/");
+        const year = parseInt(parts[2]);
+        return !isNaN(year) ? year : null;
       })
-      .filter((v, i, a) => a.indexOf(v) === i && !isNaN(v));
+      .filter((v, i, a) => v && a.indexOf(v) === i);
 
-    res.json({ domainOptions: domains, companyOptions: companies, yearOptions: uniqueYears });
+    // 🧩 Group types → Internship / Research Project
+    const typeGroups = new Set();
+    approvedInternships.forEach(i => {
+      const t = (i.type || "").toLowerCase().replace(/\s+/g, "-");
+
+      if (t.includes("internship")) typeGroups.add("Internship");
+      else if (t.includes("project")) typeGroups.add("Research Project");
+    });
+
+    res.json({
+      domainOptions: domains,
+      companyOptions: companies,
+      yearOptions: uniqueYears,
+      typeOptions: Array.from(typeGroups),
+    });
+
   } catch (err) {
+    console.error("❌ Error in getFilterOptions:", err);
     res.status(500).json({ error: "Error loading filters" });
   }
 };

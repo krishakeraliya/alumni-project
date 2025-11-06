@@ -42,9 +42,11 @@
 import React, { useState, useEffect,useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useAuth } from "../store/auth";
 
 
 export default function AdminUpload() {
+   const { token } = useAuth();
   const [file, setFile] = useState(null);
   const [approvedData, setApprovedData] = useState([]);
   const fileInputRef = useRef(null); // Add this line
@@ -52,16 +54,16 @@ export default function AdminUpload() {
 
   const fetchApproved = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/approved");
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.get("http://localhost:5000/api/approved",{ headers });
       setApprovedData(res.data);
     } catch (err) {
       console.error("Error fetching approved data:", err);
     }
   };
-
   useEffect(() => {
-    fetchApproved();
-  }, []);
+    if (token) fetchApproved();
+  }, [token]);
 
  const handleUpload = async () => {
   if (!file) {
@@ -73,9 +75,11 @@ export default function AdminUpload() {
   formData.append("file", file);
 
   try {
+     const headers = { Authorization: `Bearer ${token}` };
     const res = await fetch("http://localhost:5000/api/upload-xlsx", {
       method: "POST",
       body: formData,
+      headers
     });
 
     const data = await res.json();

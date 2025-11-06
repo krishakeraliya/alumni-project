@@ -66,7 +66,7 @@ const toggleMenu = () => {
 
       <div className="w-full flex justify-center mt-4 px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row max-w-3xl w-full h-auto sm:h-12 rounded-lg overflow-hidden shadow-lg bg-white">
-          <select className="bg-gray-100 px-3 py-2 sm:py-0 text-sm font-medium text-gray-700 outline-none hover:bg-gray-200 cursor-pointer">
+          {/* <select className="bg-gray-100 px-3 py-2 sm:py-0 text-sm font-medium text-gray-700 outline-none hover:bg-gray-200 cursor-pointer">
             <option>Search In:</option>
             <option>Name</option>
             <option>Enrollment</option>
@@ -74,7 +74,7 @@ const toggleMenu = () => {
             <option>Company</option>
             <option>Year</option>
             <option>Type</option>
-          </select>
+          </select> */}
 
           <input
             placeholder="Search Your Inspiration..."

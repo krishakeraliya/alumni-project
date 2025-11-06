@@ -45,7 +45,7 @@ function App() {
             <>
               <Navbar />
               <About/>
-              <div className="p-4">This is About Page</div>
+              
             </>
           }
         />
@@ -55,7 +55,7 @@ function App() {
             <>
               <Navbar />
               <Contact/>
-              <div className="p-4">This is Contact Page</div>
+              
             </>
           }
         />
@@ -82,8 +82,8 @@ function App() {
   path="/add-details"
   element={
     <>
-      
-      <InternshipForm />
+       <PrivateRoute> <InternshipForm /></PrivateRoute>
+     
     </>
   }
 />
@@ -125,8 +125,8 @@ function App() {
           path="/internships/:id"
           element={
             <>
-            
-              <CardDetails />
+              <PrivateRoute><CardDetails /></PrivateRoute>
+              
             </>
           }
         />

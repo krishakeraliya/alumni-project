@@ -7,6 +7,7 @@ import { useRef } from 'react';
 import Filter from '../components/Filter';
 import Card from '../components/Card';
 import { useAuth } from "../store/auth"; 
+import Fuse from "fuse.js";
 
 
 export default function ViewDashboard() {
@@ -18,6 +19,12 @@ export default function ViewDashboard() {
   const [cards, setCards] = useState([]);
   const [filtercards, setfiltercards] = useState([]);
   const [filterData, setFilterData] = useState([]); // ✅ defined properly
+  const [debouncedSearch, setDebouncedSearch] = useState(searchText);
+
+  useEffect(() => {
+  const handler = setTimeout(() => setDebouncedSearch(searchText), 300);
+  return () => clearTimeout(handler);
+}, [searchText]);
 
   const navigate = useNavigate();
 const handleLogout = () => {
@@ -92,10 +99,10 @@ const handleLogout = () => {
         {
           id: "Type",
           name: "Type",
-          options: [
-            { label: "Internship", value: "Internship" },
-            { label: "Research Project", value: "Research Project" },
-          ],
+         options: data.typeOptions.map((t) => ({
+  label: t,
+  value: t,
+})),
         },
       ]);
     } catch (error) {
@@ -108,42 +115,183 @@ const handleLogout = () => {
 
 
   // ✅ 3. Apply filters + search
+// useEffect(() => {
+//   if (!Array.isArray(cards)) {
+//     console.error("❌ cards is not an array:", cards);
+//     return;
+//   }
+
+//   const filtered = cards.filter((card) => {
+//     const matchesFilters = activefilters.every((filter) => {
+//   if (filter.options.length === 0) return true;
+
+//   const field = filter.type.toLowerCase();
+
+//   // ✅ Special handling for Year filter
+//   if (field === "year") {
+//     const cardYear = new Date(card.startDate).getFullYear();
+//     return filter.options.includes(cardYear);
+//   }
+
+//   const cardValue = String(card[field] || '').toLowerCase();
+//   return filter.options.some((opt) => String(opt).toLowerCase() === cardValue);
+// });
+
+//     const matchesSearch = (() => {
+//       if (!searchText.trim()) return true;
+//       const keywords = searchText.toLowerCase().split(/\s+/);
+//       const searchableValues = Object.values(card)
+//         .map((val) => String(val).toLowerCase())
+//         .join(" ");
+//       return keywords.some((word) => searchableValues.includes(word));
+//     })();
+
+//     return matchesFilters && matchesSearch;
+//   });
+
+//   setfiltercards(filtered);
+// }, [activefilters, cards, searchText]);
+
+// ✅ 3. Apply filters + improved Fuse.js fuzzy search (with debounced input)
 useEffect(() => {
-  if (!Array.isArray(cards)) {
-    console.error("❌ cards is not an array:", cards);
-    return;
-  }
+  if (!Array.isArray(cards)) return;
 
-  const filtered = cards.filter((card) => {
-    const matchesFilters = activefilters.every((filter) => {
-  if (filter.options.length === 0) return true;
+  let filtered = cards;
 
-  const field = filter.type.toLowerCase();
+  // ✅ Step 1: Apply filters first
+  // filtered = filtered.filter((card) => {
+  //   return activefilters.every((filter) => {
+  //     if (filter.options.length === 0) return true;
 
-  // ✅ Special handling for Year filter
-  if (field === "year") {
-    const cardYear = new Date(card.startDate).getFullYear();
-    return filter.options.includes(cardYear);
-  }
+  //     const field = filter.type.toLowerCase();
 
-  const cardValue = String(card[field] || '').toLowerCase();
-  return filter.options.some((opt) => String(opt).toLowerCase() === cardValue);
+  //     // Special case: Year filter
+  //     if (field === "year") {
+  //       const cardYear = new Date(card.startDate).getFullYear();
+  //       return filter.options.includes(cardYear);
+  //     }
+
+  //     const cardValue = String(card[field] || "").toLowerCase();
+  //     return filter.options.some(
+  //       (opt) => String(opt).toLowerCase() === cardValue
+  //     );
+  //   });
+  // });
+  filtered = filtered.filter((card) => {
+  return activefilters.every((filter) => {
+    if (filter.options.length === 0) return true;
+
+    const field = filter.type.toLowerCase();
+    const cardValue = String(card[field] || "").toLowerCase();
+
+    // ✅ Special handling for "Year"
+    if (field === "year") {
+      const cardYear = new Date(card.startDate).getFullYear();
+      return filter.options.includes(cardYear);
+    }
+
+    // ✅ Special handling for "Type"
+    if (field === "type") {
+      // Map detailed types into broad categories
+      const mappedType = cardValue.includes("internship")
+        ? "internship"
+        : cardValue.includes("project")
+        ? "research project"
+        : cardValue;
+
+      return filter.options.some(
+        (opt) => opt.toLowerCase() === mappedType
+      );
+    }
+
+    // ✅ Default handling for others (domain, company etc.)
+    return filter.options.some(
+      (opt) => opt.toLowerCase() === cardValue
+    );
+  });
 });
 
-    const matchesSearch = (() => {
-      if (!searchText.trim()) return true;
-      const keywords = searchText.toLowerCase().split(/\s+/);
-      const searchableValues = Object.values(card)
-        .map((val) => String(val).toLowerCase())
-        .join(" ");
-      return keywords.some((word) => searchableValues.includes(word));
-    })();
 
-    return matchesFilters && matchesSearch;
+if (debouncedSearch.trim()) {
+  const searchTerm = debouncedSearch.trim().toLowerCase();
+
+  // ✅ Exact match logic for Enrollment Numbers like ET22BTIT78
+  if (/^et\d{2}btit\d+/i.test(searchTerm)) {
+    filtered = filtered.filter(
+      (card) => card.enrollment?.toLowerCase() === searchTerm
+    );
+  } else {
+  // 🧠 Fuzzy + multi-keyword smart search
+  const fuse = new Fuse(filtered, {
+    keys: [
+      { name: "name", weight: 0.5 },
+      { name: "domain", weight: 0.4 },
+      { name: "company", weight: 0.4 },
+      { name: "type", weight: 0.2 },
+      { name: "startDate", weight: 0.2 },
+      { name: "enrollment", weight: 0.8 },
+    ],
+    threshold: 0.25,
+    distance: 40,
+    ignoreLocation: true,
+    includeScore: true,
+    minMatchCharLength: 2,
   });
 
+  // 🧠 Clean sentence: remove filler / stop words before splitting
+  const stopWords = new Set([
+    "the", "is", "in", "of", "a", "an", "to", "for", "and", "by", "with", "from",
+    "who", "have", "has", "had", "student", "students", "applied", "apply",
+    "that", "this", "on", "at", "doing", "domain", "internship", "project"
+  ]);
+
+  const keywords = searchTerm
+    .split(/\s+/)
+    .map(w => w.trim().toLowerCase())
+    .filter(w => w && !stopWords.has(w));
+
+  // ✅ Declare before using
+  let combinedMatches = new Map();
+
+  // 🧩 Run Fuse for each keyword
+  keywords.forEach((word) => {
+    const results = fuse.search(word);
+    results.forEach((r) => {
+      if (!combinedMatches.has(r.item._id)) {
+        combinedMatches.set(r.item._id, { ...r.item, matchCount: 1 });
+      } else {
+        combinedMatches.get(r.item._id).matchCount += 1;
+      }
+    });
+  });
+  // ✅ Manually filter out irrelevant fuzzy matches
+combinedMatches.forEach((item, key) => {
+  const combinedValues = Object.values(item)
+    .map((v) => String(v).toLowerCase())
+    .join(" ");
+
+  // Agar pure data me search term bilkul nahi milta — to remove it
+  if (!combinedValues.includes(searchTerm)) {
+    combinedMatches.delete(key);
+  }
+});
+
+
+  // 🧠 Keep only those that matched at least half of the keywords
+  const minRequiredMatches = Math.ceil(keywords.length / 2);
+  filtered = Array.from(combinedMatches.values())
+    .filter(item => item.matchCount >= minRequiredMatches)
+    .sort((a, b) => b.matchCount - a.matchCount);
+}
+
+}
+
+
+  // ✅ Step 3: Update state
   setfiltercards(filtered);
-}, [activefilters, cards, searchText]);
+}, [activefilters, cards, debouncedSearch]);
+
+
 
   return (
     <div className='bg-gray-300 min-h-screen'>

@@ -4,6 +4,8 @@ const multer = require('multer');
 const path = require('path');
 const router = express.Router();
 const galleryController = require('../controller/galleryController');
+const authMiddleware = require('../middlewares/auth-middleware');
+const adminMiddleware = require('../middlewares/admin-middleware');
 
 const uploadDir = process.env.UPLOAD_DIR || 'uploads';
 
@@ -36,9 +38,11 @@ const upload = multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024
 router.get('/', galleryController.getAllImages);
 
 // POST /api/gallery/upload  -> upload one or many images (field name 'images')
-router.post('/upload', upload.array('images', 20), galleryController.uploadImages);
+router.post('/upload',authMiddleware,
+  adminMiddleware, upload.array('images', 20), galleryController.uploadImages);
 
 // DELETE /api/gallery/:id  -> delete image by id
-router.delete('/:id', galleryController.deleteImage);
+router.delete('/:id',authMiddleware,
+  adminMiddleware, galleryController.deleteImage);
 
 module.exports = router;

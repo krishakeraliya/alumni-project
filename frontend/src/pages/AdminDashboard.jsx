@@ -232,30 +232,37 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import {useAuth} from "../store/auth"
+
+
 
 
 
 
 export default function AdminDashboard() {
+  const {token} =useAuth();
   const [approvedCount, setApprovedCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
   const [rejectedCount, setRejectedCount] = useState(0); // ✅ New state
 
   useEffect(() => {
-    fetchCounts();
-  }, []);
+    if (token) {
+      fetchCounts();
+    }
+  }, [token]); // ✅ wait until token is available
 
   const fetchCounts = async () => {
     try {
+       const headers = { Authorization: `Bearer ${token}` }; // ✅ attach token
       const [approvedRes, pendingRes, rejectedRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/approved"),
-        axios.get("http://localhost:5000/api/pending"),
-        axios.get("http://localhost:5000/api/rejected"), // ✅ Make sure this endpoint exists
+        axios.get("http://localhost:5000/api/approved",{ headers }),
+        axios.get("http://localhost:5000/api/pending",{ headers }),
+        axios.get("http://localhost:5000/api/rejected",{ headers }), // ✅ Make sure this endpoint exists
       ]);
 
-      setApprovedCount(approvedRes.data.length);
-      setPendingCount(pendingRes.data.length);
-      setRejectedCount(rejectedRes.data.length); // ✅ Set rejected count
+      setApprovedCount(approvedRes.data.length || 0);
+      setPendingCount(pendingRes.data.length || 0);
+      setRejectedCount(rejectedRes.data.length || 0); // ✅ Set rejected count
     } catch (error) {
       console.error("Error fetching dashboard counts:", error);
     }

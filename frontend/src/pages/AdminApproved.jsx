@@ -118,19 +118,33 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useAuth } from "../store/auth";
 
 
 function AdminApproved() {
+  
+   const { token } = useAuth();
   const [approved, setApproved] = useState([]);
   const [expandedRow, setExpandedRow] = useState(null);
   
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/approved")
-      .then((res) => setApproved(res.data))
-      .catch((err) => console.error("Error loading approved:", err));
-  }, []);
+    // axios
+    //   .get("http://localhost:5000/api/approved")
+    //   .then((res) => setApproved(res.data))
+    //   .catch((err) => console.error("Error loading approved:", err));
+      if (token) fetchApproved();
+  }, [token]);
+
+   const fetchApproved = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.get("http://localhost:5000/api/approved", { headers });
+      setApproved(res.data);
+    } catch (err) {
+      console.error("Error loading approved:", err);
+    }
+  };
 
   const toggleRow = (id) => {
     setExpandedRow(expandedRow === id ? null : id);
@@ -141,8 +155,12 @@ function AdminApproved() {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/approved/${id}`, {
-        method: "DELETE",
+   
+      const response = await fetch(`http://localhost:5000/api/approved/${id}`,{
+         method: "DELETE",
+         headers: {
+    Authorization: `Bearer ${token}`,
+  },
       });
 
       if (response.ok) {
